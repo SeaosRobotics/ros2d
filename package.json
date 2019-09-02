@@ -29,6 +29,9 @@
     "url": "http://robotwebtools.org"
   },
   "bundleDependencies": false,
+  "dependencies": {
+    "createjs": "^1.0.1"
+  },
   "deprecated": false,
   "description": "2D Visualization Library for use with the ROS JavaScript Libraries",
   "devDependencies": {
@@ -50,6 +53,7 @@
     "robot"
   ],
   "license": "BSD",
+  "main": "./build/ros2d.js",
   "name": "ros2d",
   "version": "0.9.0"
 }
