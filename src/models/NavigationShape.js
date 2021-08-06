@@ -38,20 +38,14 @@ ROS2D.NavigationShape = function(options) {
   
       graphics.beginFill(fillColor);
       graphics.beginStroke(strokeColor);
-      graphics.drawRect(-(size*1.5), -(size/2), size*2, size);
+      graphics.drawRect(-(size*1.5), -(size/2), size*1.5, size);
       graphics.endFill();
       graphics.endStroke();
   
-      graphics.setStrokeStyle(2);
-      graphics.beginFill(createjs.Graphics.getRGB(255, 0, 0));
+      graphics.setStrokeStyle(strokeSize/2);
+      graphics.beginFill(createjs.Graphics.getRGB(100, 100, 100));
       graphics.beginStroke(strokeColor);
-      graphics.arc((size/2)-(size/5),0,(size/5)/2,0,Math.PI*2,true);
-      graphics.endFill();
-      graphics.endStroke();
-  
-      graphics.beginFill(strokeColor);
-      graphics.beginStroke(strokeColor);
-      graphics.arc((size/2)-(size/5),0,((size/5)/2)/2,0,Math.PI*2,true);
+      graphics.arc(-(size*1.3),0,(size/5)/2,0,Math.PI*2,true);
       graphics.endFill();
       graphics.endStroke();
     } else {

@@ -18,35 +18,54 @@
 ROS2D.ImageMapClient = function(options) {
   var that = this;
   options = options || {};
-  var ros = options.ros;
+  var ros = options.ros || null;
   var topic = options.topic || '/map_metadata';
   this.image = options.image;
+  this.mapInfo = options.mapInfo || null;
   this.rootObject = options.rootObject || new createjs.Container();
 
   // create an empty shape to start with
   this.currentImage = new createjs.Shape();
 
-  // subscribe to the topic
-  var rosTopic = new ROSLIB.Topic({
-    ros : ros,
-    name : topic,
-    messageType : 'nav_msgs/MapMetaData'
-  });
+  if (ros !== null) {
+    // subscribe to the topic
+    var rosTopic = new ROSLIB.Topic({
+      ros : ros,
+      name : topic,
+      messageType : 'nav_msgs/MapMetaData'
+    });
 
-  rosTopic.subscribe(function(message) {
-    // we only need this once
-    rosTopic.unsubscribe();
+    rosTopic.subscribe(function(message) {
+      // we only need this once
+      rosTopic.unsubscribe();
 
+      // create the image
+      that.currentImage = new ROS2D.ImageMap({
+        message : message,
+        image : that.image
+      });
+      that.rootObject.addChild(that.currentImage);
+      // work-around for a bug in easeljs -- needs a second object to render correctly
+      that.rootObject.addChild(new ROS2D.Grid({size:1}));
+
+      that.emit('change');
+    });
+  } else {
     // create the image
     that.currentImage = new ROS2D.ImageMap({
-      message : message,
+      message : that.mapInfo,
       image : that.image
     });
     that.rootObject.addChild(that.currentImage);
     // work-around for a bug in easeljs -- needs a second object to render correctly
     that.rootObject.addChild(new ROS2D.Grid({size:1}));
 
-    that.emit('change');
-  });
+    setTimeout(function() {
+      that.emit('change');
+    }, 1000);
+  }
+  
+
+  
 };
 ROS2D.ImageMapClient.prototype.__proto__ = EventEmitter2.prototype;
