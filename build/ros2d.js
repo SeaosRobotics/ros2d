@@ -102,36 +102,55 @@ ROS2D.ImageMap.prototype.__proto__ = createjs.Bitmap.prototype;
 ROS2D.ImageMapClient = function(options) {
   var that = this;
   options = options || {};
-  var ros = options.ros;
+  var ros = options.ros || null;
   var topic = options.topic || '/map_metadata';
   this.image = options.image;
+  this.mapInfo = options.mapInfo || null;
   this.rootObject = options.rootObject || new createjs.Container();
 
   // create an empty shape to start with
   this.currentImage = new createjs.Shape();
 
-  // subscribe to the topic
-  var rosTopic = new ROSLIB.Topic({
-    ros : ros,
-    name : topic,
-    messageType : 'nav_msgs/MapMetaData'
-  });
+  if (ros !== null) {
+    // subscribe to the topic
+    var rosTopic = new ROSLIB.Topic({
+      ros : ros,
+      name : topic,
+      messageType : 'nav_msgs/MapMetaData'
+    });
 
-  rosTopic.subscribe(function(message) {
-    // we only need this once
-    rosTopic.unsubscribe();
+    rosTopic.subscribe(function(message) {
+      // we only need this once
+      rosTopic.unsubscribe();
 
+      // create the image
+      that.currentImage = new ROS2D.ImageMap({
+        message : message,
+        image : that.image
+      });
+      that.rootObject.addChild(that.currentImage);
+      // work-around for a bug in easeljs -- needs a second object to render correctly
+      that.rootObject.addChild(new ROS2D.Grid({size:1}));
+
+      that.emit('change');
+    });
+  } else {
     // create the image
     that.currentImage = new ROS2D.ImageMap({
-      message : message,
+      message : that.mapInfo,
       image : that.image
     });
     that.rootObject.addChild(that.currentImage);
     // work-around for a bug in easeljs -- needs a second object to render correctly
     that.rootObject.addChild(new ROS2D.Grid({size:1}));
 
-    that.emit('change');
-  });
+    setTimeout(function() {
+      that.emit('change');
+    }, 1000);
+  }
+  
+
+  
 };
 ROS2D.ImageMapClient.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -584,8 +603,8 @@ ROS2D.NavigationImage = function(options) {
     var SCALE_SIZE = 1.020;
     createjs.Ticker.addEventListener('tick', function() {
       if (originals['scaleX'] === undefined) {
-        originals['scaleX'] = that.scaleX;
-        originals['scaleY'] = that.scaleY;
+        originals['scaleX'] = that.scaleX/2;
+        originals['scaleY'] = that.scaleY/2;
       }
       if (pulse) {
         // have the model "pulse"
@@ -659,20 +678,14 @@ ROS2D.NavigationShape = function(options) {
   
       graphics.beginFill(fillColor);
       graphics.beginStroke(strokeColor);
-      graphics.drawRect(-(size*1.5), -(size/2), size*2, size);
+      graphics.drawRect(-(size*1.5), -(size/2), size*1.5, size);
       graphics.endFill();
       graphics.endStroke();
   
-      graphics.setStrokeStyle(2);
-      graphics.beginFill(createjs.Graphics.getRGB(255, 0, 0));
+      graphics.setStrokeStyle(strokeSize/2);
+      graphics.beginFill(createjs.Graphics.getRGB(100, 100, 100));
       graphics.beginStroke(strokeColor);
-      graphics.arc((size/2)-(size/5),0,(size/5)/2,0,Math.PI*2,true);
-      graphics.endFill();
-      graphics.endStroke();
-  
-      graphics.beginFill(strokeColor);
-      graphics.beginStroke(strokeColor);
-      graphics.arc((size/2)-(size/5),0,((size/5)/2)/2,0,Math.PI*2,true);
+      graphics.arc(-(size*1.3),0,(size/5)/2,0,Math.PI*2,true);
       graphics.endFill();
       graphics.endStroke();
     } else {

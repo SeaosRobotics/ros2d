@@ -45,8 +45,8 @@ ROS2D.NavigationImage = function(options) {
     var SCALE_SIZE = 1.020;
     createjs.Ticker.addEventListener('tick', function() {
       if (originals['scaleX'] === undefined) {
-        originals['scaleX'] = that.scaleX;
-        originals['scaleY'] = that.scaleY;
+        originals['scaleX'] = that.scaleX/2;
+        originals['scaleY'] = that.scaleY/2;
       }
       if (pulse) {
         // have the model "pulse"
