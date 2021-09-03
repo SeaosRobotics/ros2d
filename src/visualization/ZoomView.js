@@ -53,3 +53,6 @@ ROS2D.ZoomView.prototype.zoom = function(zoom) {
 	this.stage.x = this.startShift.x - (this.center.x-this.startShift.x) * (this.stage.scaleX/this.startScale.x - 1);
 	this.stage.y = this.startShift.y - (this.center.y-this.startShift.y) * (this.stage.scaleY/this.startScale.y - 1);
 };
+
+// The folloing should be included on the last object
+global.ROS2D = ROS2D;
