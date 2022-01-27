@@ -137,6 +137,8 @@
 
     if (changed) {
       draw();
+      that.scaleX = scaleX || scale;
+      that.scaleY = scaleY || scale;
     }
   };
 
