@@ -32,17 +32,18 @@
 
   var graphics = new createjs.Graphics();
   var draw = function() {
+    graphics.clear();
     // var graphics = new createjs.Graphics();
     if (baseType === 'cart') {
       // line width
       graphics.setStrokeStyle(strokeSize);
-  
+
       graphics.beginFill(fillColor);
       graphics.beginStroke(strokeColor);
       graphics.drawRect(-(size*1.5), -(size/2), size*1.5, size);
       graphics.endFill();
       graphics.endStroke();
-  
+
       graphics.setStrokeStyle(strokeSize/2);
       graphics.beginFill(createjs.Graphics.getRGB(100, 100, 100));
       graphics.beginStroke(strokeColor);
